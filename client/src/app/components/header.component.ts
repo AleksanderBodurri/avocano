@@ -57,7 +57,7 @@ import { LinkComponent } from "./link.component";
   <div class="header">
     <h1><a [routerLink]="['/']">{{ headerTitle }}</a></h1>
     <div class="navigation-bar">
-      <app-link href="/product-list">Products</app-link>
+      <app-link href="/products">Products</app-link>
       <app-link href="/shipping">Shipping</app-link>
       <app-link href="/contact">Contact</app-link>
     </div>

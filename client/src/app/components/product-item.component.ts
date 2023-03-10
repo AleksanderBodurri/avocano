@@ -1,4 +1,4 @@
-import { NgFor, NgIf } from "@angular/common";
+import { NgFor, NgIf, NgOptimizedImage } from "@angular/common";
 import { Component, inject, Input, OnChanges, OnInit, SimpleChanges } from "@angular/core";
 import {MatDialog, MatDialogModule, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
 import {MatButtonModule} from '@angular/material/button';
@@ -11,7 +11,8 @@ import { Testimonial, TestimonialService } from "../services/testimonial.service
   imports: [
     NgIf,
     NgFor,
-    MatDialogModule
+    MatDialogModule,
+    NgOptimizedImage
   ],
   selector: 'app-product-item',
   styles: [
@@ -169,8 +170,10 @@ import { Testimonial, TestimonialService } from "../services/testimonial.service
           <img
             class="productimage"
             alt="product logo"
-            src="{{ errorLoadingImage ? 'assets/noimage.png' : productItem.image }}"
-            loading="lazy"
+            width="300"
+            height="300"
+            ngSrc="{{ errorLoadingImage ? 'assets/noimage.png' : productItem.image }}"
+            priority
             (error)="onError()"
           />
         </div>
@@ -253,9 +256,17 @@ export class ProductItemComponent implements OnInit {
 
     // Ensure we are retrieving current product testimonials
     if (id) {
+      if (this.productService.testimonialCache[id]) {
+        if (this.productService.testimonialCache[id]) {
+          this.count = inventory_count!;
+          this.testimonials = this.productService.testimonialCache[id];
+        }
+      }
+
       this.testimonialService.getProductTestimonials(id).subscribe((testimonials: Testimonial[]) => {
         this.count = inventory_count!;
         this.testimonials = testimonials;
+        this.productService.testimonialCache[id] = testimonials;
       });
     } else {
       this.count = inventory_count!;
@@ -275,7 +286,7 @@ export class ProductItemComponent implements OnInit {
     event.preventDefault();
     if (this.count > 0 && this.productItem?.id !== undefined) {
       this.productService.buyProduct(this.productItem.id).subscribe(() => {
-        this.count++;
+        this.count--;
         this.dialog.open(BuyDialogComponent, { 
           maxWidth: 'min(80vw, 560px)',
           data: { name: this.productItem!.name },

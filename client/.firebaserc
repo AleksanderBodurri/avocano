@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "avocano-d9f40": {
+      "hosting": {
+        "client": [
+          "avocano-d9f40"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "avocano-d9f40"
+  }
+}

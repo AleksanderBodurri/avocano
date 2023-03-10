@@ -101,6 +101,16 @@
             ],
             "scripts": []
           }
+        },
+        "deploy": {
+          "builder": "@angular/fire:deploy",
+          "options": {
+            "prerender": false,
+            "ssr": false,
+            "browserTarget": "client:build:production",
+            "firebaseProject": "avocano-d9f40",
+            "firebaseHostingSite": "avocano-d9f40"
+          }
         }
       }
     }

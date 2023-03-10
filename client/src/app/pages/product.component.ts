@@ -58,7 +58,7 @@ import { ProductItem, ProductService } from "../services/product.service";
   
     .productItem {
       display: flex;
-      align-item: flex-start;
+      align-items: flex-start;
       margin: 10px;
       padding: 10px;
       border-radius: 5px;
@@ -83,11 +83,11 @@ import { ProductItem, ProductService } from "../services/product.service";
   ],
   template: `
     
-  <div class="productBase" *ngIf="productItem">
-    <p *ngIf="status === 'loading' else loaded">loading...</p>
+  <div class="productBase">
+    <p *ngIf="status === 'loading' || productItem === undefined; else loaded">loading...</p>
 
     <ng-template #loaded>
-      <app-product-item [productId]="productItem.id" [productItem]="productItem"/>
+      <app-product-item [productId]="productItem!.id" [productItem]="productItem"/>
     </ng-template>
   </div>
 
@@ -115,8 +115,14 @@ export class ProductComponent {
       return;
     }
 
+    if (this.productService.productCache[this.productId]) {
+      this.status = 'loaded';
+      this.productItem = this.productService.productCache[this.productId];
+    }
+
     this.productService.getProduct(this.productId).subscribe((productItem: ProductItem) => {
       this.productItem = productItem;
+      this.productService.productCache[this.productId!] = this.productItem;
       this.status = 'loaded';
     })
   }

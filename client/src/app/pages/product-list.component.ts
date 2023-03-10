@@ -1,7 +1,8 @@
 import { CommonModule } from "@angular/common";
-import { Component, inject, OnInit } from "@angular/core";
+import { AfterViewInit, Component, inject, OnInit } from "@angular/core";
 import { Router, RouterModule } from "@angular/router";
 import { ProductItem, ProductService } from "../services/product.service";
+import { TestimonialService } from "../services/testimonial.service";
 
 @Component({
   standalone: true,
@@ -61,7 +62,6 @@ import { ProductItem, ProductService } from "../services/product.service";
   
     .productItem {
       display: flex;
-      align-item: flex-start;
       margin: 10px;
       padding: 10px;
       border-radius: 5px;
@@ -92,11 +92,13 @@ import { ProductItem, ProductService } from "../services/product.service";
     <h1 class="productTitle">Product List</h1>
     <div class="productWrapper">
       <p *ngIf="status === 'loading' else loaded">loading...</p>
+
       <ng-template #loaded>
         <a
           *ngFor="let item of products"
           class="productItem"
           [routerLink]="['/product', item.id]"
+          (mouseenter)="preloadTestimonials(item.id)"
         >
           <div class="productimageWrapper">
             <img
@@ -125,6 +127,7 @@ export class ProductListComponent implements OnInit {
   products: ProductItem[] = [];
   router = inject(Router);
   productService = inject(ProductService);
+  testimonialService = inject(TestimonialService)
 
 
   errorLoadingImage = false;
@@ -133,9 +136,37 @@ export class ProductListComponent implements OnInit {
     this.errorLoadingImage = true;
   }
 
+  updateProductCache() {
+    this.products.forEach(product => {
+      this.productService.productCache[product.id] = product;
+    });
+
+    // preload first 5 testimonials
+    this.products.slice(0, 5).forEach(product => {
+      this.preloadTestimonials(product.id);
+    });
+  }
+
+  preloadTestimonials(productId: number) {
+    if (this.productService.testimonialCache[productId]) {
+      return;
+    }
+
+    this.testimonialService.getProductTestimonials(productId).subscribe(testimonials => {
+      this.productService.testimonialCache[productId] = testimonials;
+    });
+  }
+
   ngOnInit() {
+    if (this.productService.requestCache['getProductList']) {
+      this.status = 'loaded';
+      this.products = this.productService.requestCache['getProductList'];
+    }
+
     this.productService.getProductList().subscribe((products: ProductItem[]) => {
       this.products = products;
+      this.productService.requestCache['getProductList'] = this.products;
+      this.updateProductCache();
       this.status = 'loaded';
     });
   }

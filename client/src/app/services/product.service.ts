@@ -2,6 +2,7 @@ import { inject, Injectable } from "@angular/core";
 import { HttpClient } from '@angular/common/http';
 import { catchError, EMPTY, Observable } from "rxjs";
 import { CONFIG } from "../../main";
+import { Testimonial } from "./testimonial.service";
 
 export interface ProductItem {
   id: number;
@@ -22,7 +23,10 @@ export interface ProductItem {
 export class ProductService {
   httpClient = inject(HttpClient);
   config = inject(CONFIG);
-
+  productCache: { [key: string]: ProductItem } = {};
+  requestCache: { [key: string]: any } = {};
+  testimonialCache: { [key: number]: Testimonial[] } = {};
+  
   buyProduct(productId: number): Observable<ProductItem> {
     const { API_URL } = this.config;
 
