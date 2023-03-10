@@ -45,17 +45,21 @@ import { SiteConfigService } from './services/site-config.service';
     `
   ],
   template: `
-    <app-header [headerTitle]="headerTitle"/>
-    <main class="main-avocano-content">
-      <router-outlet/>
-    </main>
-    <app-footer/>
+    <ng-container *ngIf="siteConfigLoaded">
+      <app-header [headerTitle]="headerTitle"/>
+      <main class="main-avocano-content">
+        <router-outlet/>
+      </main>
+      <app-footer/>
+    </ng-container>
   `
 })
 export class AppComponent implements OnInit {
   siteConfigService = inject(SiteConfigService);
   elementRef = inject(ElementRef);
   headerTitle = 'Simulatum';
+
+  siteConfigLoaded = false;
 
   ngOnInit(): void {
     this.siteConfigService.getSiteConfig().subscribe(siteConfig => {
@@ -81,6 +85,9 @@ export class AppComponent implements OnInit {
       nativeElement.style.setProperty('--base-font', siteConfig.base_font);
 
       this.headerTitle = siteConfig.site_name;
+      
+
+      this.siteConfigLoaded = true;
     });
   }
 }

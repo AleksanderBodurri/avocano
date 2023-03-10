@@ -17,11 +17,11 @@ import { ProductItem, ProductService } from "../services/product.service";
     `
   ],
   template: `
-    <div class="homeBase" *ngIf="productItem">
-      <p *ngIf="status === 'loading' else loaded">loading...</p>
+    <div class="homeBase">
+      <p *ngIf="status === 'loading' || productItem === undefined; else loaded">loading...</p>
 
       <ng-template #loaded>
-        <app-product-item [productId]="productItem.id" [productItem]="productItem"/>
+        <app-product-item [productId]="productItem!.id" [productItem]="productItem!"/>
       </ng-template>
     </div>
     `
@@ -32,9 +32,15 @@ export class HomeComponent implements OnInit {
   productItem: ProductItem|undefined = undefined;
 
   ngOnInit() {
+    if (this.productService.requestCache['getActiveProduct']) {
+      this.status = 'loaded';
+      this.productItem = this.productService.requestCache['getActiveProduct'];
+    }
+
     this.productService.getActiveProduct().subscribe((productItem: ProductItem) => {
       this.status = 'loaded';
       this.productItem = productItem;
+      this.productService.requestCache['getActiveProduct'] = this.productItem;
     });
   }
 }
