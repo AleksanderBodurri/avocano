@@ -180,7 +180,7 @@ import { Testimonial, TestimonialService } from "../services/testimonial.service
         <div class="productItemContent">
           <h2 class="itemTitle">{{ productItem.name }}</h2>
 
-          <div class="price" *ngIf="productHasDiscountPrice(); else noDiscount">
+          <div class="price" *ngIf="productHasDiscountPercent(); else noDiscount">
             <div class="retailPrice">RRP $\{{ productItem.price }}</div>
             <div class="discountPrice">Now $\{{ productItem.discount_price }}</div>
             <div class="discountRate">Save {{ productItem.discount_percent }}%</div>
@@ -274,8 +274,8 @@ export class ProductItemComponent implements OnInit {
     }
   }
 
-  productHasDiscountPrice(): boolean {
-    return parseFloat(this.productItem!.discount_price) > 0
+  productHasDiscountPercent(): boolean {
+    return this.productItem!.discount_percent > 0
   }
 
   onError(): void {
