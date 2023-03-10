@@ -1,0 +1,30 @@
+
+@use '@angular/material' as mat;
+@use 'sass:map';
+
+@include mat.core();
+
+$primary: mat.define-palette(mat.$deep-purple-palette, A700);
+$accent:  mat.define-palette(mat.$amber-palette, A200, A100, A400);
+$theme: mat.define-light-theme((
+  color: (
+    primary: $primary,
+    accent: $accent
+  ),
+  typography: mat.define-typography-config(),
+));
+
+@include mat.all-component-themes(map.merge($theme, (
+  typography: mat.define-typography-config()
+)));
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.avocano-panel {
+  text-align: center;
+}
